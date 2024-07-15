@@ -28,3 +28,11 @@ steps:
     artifact: 'transformed_data'
     publishLocation: 'pipeline'
   displayName: 'Publish transformed data'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+  condition: failed()  # This ensures the task runs only when the previous tasks fail
+  inputs:
+    artifactName: 'drop'
+    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    publishLocation: 'Container'
