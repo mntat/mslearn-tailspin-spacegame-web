@@ -1,3 +1,30 @@
-pool: MyAgentPool
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  PYTHON_VERSION: '3.8'
+
 steps:
-- bash: echo hello world
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(PYTHON_VERSION)'
+    addToPath: true
+
+- script: |
+    python -m pip install --upgrade pip
+    pip install pandas
+  displayName: 'Install dependencies'
+
+- script: |
+    python etl_pipeline.py
+  displayName: 'Run ETL pipeline'
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: 'data/transformed_data.csv'
+    artifact: 'transformed_data'
+    publishLocation: 'pipeline'
+  displayName: 'Publish transformed data'
